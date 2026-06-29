@@ -1,0 +1,14 @@
+# Build output (release binaries come from CI, not the repo)
+/dist/
+/wikit
+/wikit.exe
+/wikit_run.exe
+
+# Local test scratch
+/wkrun*.log
+/wkrun*.err
+/wktest/
+
+# NOTE: internal/sevenzip/assets/*.exe (the embedded 7-Zip) MUST be committed —
+# go:embed needs it at build time — so do not add a blanket *.exe ignore here.
+/.instest/

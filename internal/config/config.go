@@ -1,0 +1,86 @@
+// Package config loads the WikiComma-compatible config.json and applies any
+// command-line overrides. The on-disk format is intentionally identical to the
+// original tool's so an existing config can be reused unchanged.
+package config
+
+import (
+	"encoding/json"
+	"fmt"
+	"os"
+	"strings"
+)
+
+type WikiEntry struct {
+	Name string `json:"name"`
+	URL  string `json:"url"`
+}
+
+type Ratelimit struct {
+	BucketSize    int `json:"bucket_size"`
+	RefillSeconds int `json:"refill_seconds"`
+}
+
+type HTTPProxy struct {
+	Address  string `json:"address"`
+	Port     int    `json:"port"`
+	User     string `json:"user,omitempty"`
+	Password string `json:"password,omitempty"`
+}
+
+type SocksProxy struct {
+	Address string `json:"address"`
+	Port    int    `json:"port"`
+}
+
+// Config mirrors the original IDaemonConfig. Optional sections are pointers so
+// "absent" and "present" are distinguishable, matching the original semantics.
+type Config struct {
+	BaseDirectory string      `json:"base_directory"`
+	Wikis         []WikiEntry `json:"wikis"`
+
+	UserListCacheFreshness *int `json:"user_list_cache_freshness,omitempty"`
+
+	Ratelimit              *Ratelimit  `json:"ratelimit,omitempty"`
+	DelayMs                *int        `json:"delay_ms,omitempty"`
+	MaximumJobs            *int        `json:"maximum_jobs,omitempty"`
+	HTTPProxy              *HTTPProxy  `json:"http_proxy,omitempty"`
+	SocksProxy             *SocksProxy `json:"socks_proxy,omitempty"`
+	UltraFastIncremental   bool        `json:"ultra_fast_incremental_scan,omitempty"`
+}
+
+// Load reads config from path. The original trims a trailing slash from each
+// wiki URL because some Wikidot endpoints dislike the resulting double slash.
+func Load(path string) (*Config, error) {
+	data, err := os.ReadFile(path)
+	if err != nil {
+		return nil, err
+	}
+	var c Config
+	if err := json.Unmarshal(data, &c); err != nil {
+		return nil, fmt.Errorf("config %s is invalid: %w", path, err)
+	}
+	for i := range c.Wikis {
+		c.Wikis[i].URL = strings.TrimSuffix(c.Wikis[i].URL, "/")
+	}
+	return &c, nil
+}
+
+// FindWiki returns the configured entry with the given name, if any.
+func (c *Config) FindWiki(name string) (WikiEntry, bool) {
+	for _, w := range c.Wikis {
+		if w.Name == name {
+			return w, true
+		}
+	}
+	return WikiEntry{}, false
+}
+
+// UserCacheMillis returns the user-info cache lifetime in milliseconds, applying
+// the original default of 86400 seconds when unset.
+func (c *Config) UserCacheMillis() int64 {
+	secs := 86400
+	if c.UserListCacheFreshness != nil {
+		secs = *c.UserListCacheFreshness
+	}
+	return int64(secs) * 1000
+}

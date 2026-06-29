@@ -1,0 +1,10 @@
+# Normalize source files to LF in the repository.
+* text=auto eol=lf
+
+# Embedded 7-Zip binaries: never apply text/EOL conversion.
+*.exe binary
+internal/sevenzip/assets/* binary
+
+# Byte-exact test fixtures: keep exactly as-is (no EOL conversion) so the
+# byte-comparison tests stay valid on every platform.
+internal/htmlx/testdata/** -text
