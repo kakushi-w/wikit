@@ -126,7 +126,7 @@ wikit update --check    # 只检查有没有新版，不安装
 wikit version           # 显示当前版本
 ```
 
-每次 `backup` 跑完后，wikit会做一次版本检查，有新版就打印一行提示——可用 `--no-update-check` 或
+每次 `backup` 跑完后，wikit会做一次版本检查，有新版就打印一行提示。可用 `--no-update-check` 或
 `WIKIT_NO_UPDATE_CHECK=1` 关闭。
 
 ## 配置
@@ -147,7 +147,7 @@ wikit version           # 显示当前版本
 
 只有 `backup all` 必须要有配置文件（它从中读取 wiki 列表）。当你显式指定 wiki 名字
 （`wikit backup <名字> ...`）且本地没有 `config.json` 时，wikit 会用上面这套相同的
-默认值内置运行——备份到 `/data`，其余参数同上。可以用 `--base-dir`（以及其他覆盖参数）
+默认值内置运行，备份到 `/data`，其余参数同上。可以用 `--base-dir`（以及其他覆盖参数）
 在不写配置文件的情况下调整，或用 `-c <路径>` 指向一个配置文件。用 `-c` 指定一个不存在
 的配置文件会报错。
 
