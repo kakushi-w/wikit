@@ -14,6 +14,7 @@ import (
 // so the config.json value (or its default) is left untouched.
 type backupOpts struct {
 	configPath string
+	configSet  bool // true if the user explicitly passed -c/--config
 
 	baseDir       *string
 	bucketSize    *int
@@ -94,6 +95,7 @@ func parseBackupArgs(args []string) (backupOpts, []string, error) {
 		opts.socksProxy = socksProxy
 	}
 	opts.noUpdateCheck = *noUpdateCheck
+	opts.configSet = setFlags["config"] || setFlags["c"]
 
 	return opts, targets, nil
 }

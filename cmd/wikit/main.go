@@ -109,7 +109,7 @@ func runBackup(args []string) error {
 		return fmt.Errorf("nothing to back up: specify 'all' or one or more wiki names")
 	}
 
-	cfg, err := config.Load(opts.configPath)
+	cfg, err := loadConfigOrDefault(opts, targets)
 	if err != nil {
 		return err
 	}
@@ -128,6 +128,38 @@ func runBackup(args []string) error {
 		selfupdate.NotifyIfNewer(repo(), version)
 	}
 	return nil
+}
+
+// loadConfigOrDefault loads the config file, falling back to the built-in
+// defaults (config.Default) when the file is simply absent. The fallback only
+// applies when the user named explicit wikis and did not point at a specific
+// config with -c/--config: "backup all" needs the config's wiki list, and an
+// explicitly-requested config that is missing is treated as an error.
+func loadConfigOrDefault(opts backupOpts, targets []string) (*config.Config, error) {
+	cfg, err := config.Load(opts.configPath)
+	if err == nil {
+		return cfg, nil
+	}
+	if !os.IsNotExist(err) {
+		return nil, err // e.g. invalid JSON — surface it
+	}
+	if opts.configSet {
+		return nil, err // user named a config that does not exist
+	}
+	if wantsAll(targets) {
+		return nil, fmt.Errorf("no config file at %s: 'backup all' needs a config listing the wikis", opts.configPath)
+	}
+	return config.Default(), nil
+}
+
+// wantsAll reports whether the targets contain the special "all" keyword.
+func wantsAll(targets []string) bool {
+	for _, t := range targets {
+		if t == "all" {
+			return true
+		}
+	}
+	return false
 }
 
 // resolveTargets turns the positional arguments into the concrete list of wikis

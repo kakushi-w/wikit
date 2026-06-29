@@ -48,6 +48,21 @@ type Config struct {
 	UltraFastIncremental   bool        `json:"ultra_fast_incremental_scan,omitempty"`
 }
 
+// Default returns the built-in configuration used when no config.json is
+// present. Its values match the documented defaults in the README, so running
+// without a config behaves identically to running with the example config. It
+// lists no wikis — the caller names the target wiki on the command line.
+func Default() *Config {
+	delay := 200
+	cache := 86400
+	return &Config{
+		BaseDirectory:          "/data",
+		Ratelimit:              &Ratelimit{BucketSize: 60, RefillSeconds: 60},
+		DelayMs:                &delay,
+		UserListCacheFreshness: &cache,
+	}
+}
+
 // Load reads config from path. The original trims a trailing slash from each
 // wiki URL because some Wikidot endpoints dislike the resulting double slash.
 func Load(path string) (*Config, error) {
