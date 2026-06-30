@@ -1,4 +1,4 @@
-# wikit
+# wikit CLI
 
 [![English](https://img.shields.io/badge/Lang-English-2563eb?style=for-the-badge)](README.md)&nbsp;[![中文](https://img.shields.io/badge/语言-中文-9ca3af?style=for-the-badge)](README.zh-CN.md)
 
