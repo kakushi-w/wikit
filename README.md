@@ -2,7 +2,7 @@
 
 [![English](https://img.shields.io/badge/Lang-English-2563eb?style=for-the-badge)](README.md)&nbsp;[![中文](https://img.shields.io/badge/语言-中文-9ca3af?style=for-the-badge)](README.zh-CN.md)
 
-A cross-platform (Windows / Linux / macOS) Wikidot farm-wiki archiving tool. It
+A cross-platform (Windows / Linux / macOS) Wikidot farm-wiki archiving tool, powered by Go. It
 produces backups that are **compatible with the WikiComma archive format** — the
 same directory layout and byte-for-byte the same file contents — so an existing
 WikiComma backup and its `config.json` can be reused unchanged, and `wikit` will
