@@ -3,8 +3,8 @@
 [![English](https://img.shields.io/badge/Lang-English-9ca3af?style=for-the-badge)](README.md)&nbsp;[![中文](https://img.shields.io/badge/语言-中文-2563eb?style=for-the-badge)](README.zh-CN.md)
 
 跨平台（Windows / Linux / macOS）的 Wikidot 维基备份工具。它产出的备份**兼容
-WikiComma 归档格式**——相同的目录结构、逐字节相同的文件内容——因此已有的
-WikiComma 备份和它的 `config.json` 可以原样沿用，`wikit` 会在其基础上继续增量备份。
+WikiComma 归档格式**：相同的目录结构、逐字节相同的文件内容。因此已有的
+WikiComma 备份和它的 `config.json` 可以原样沿用，`wikit` 会在其基础上继续增量备份。备份可直接导入[ProjectWikit维基迁移引擎](https://github.com/WikitTeam/ProjectWikit)使用。
 
 
 ## 能备份哪些数据
@@ -126,7 +126,7 @@ wikit update --check    # 只检查有没有新版，不安装
 wikit version           # 显示当前版本
 ```
 
-每次 `backup` 跑完后，wikit会做一次版本检查，有新版就打印一行提示——可用 `--no-update-check` 或
+每次 `backup` 跑完后，wikit会做一次版本检查，有新版就打印一行提示。可用 `--no-update-check` 或
 `WIKIT_NO_UPDATE_CHECK=1` 关闭。
 
 ## 配置
@@ -147,7 +147,7 @@ wikit version           # 显示当前版本
 
 只有 `backup all` 必须要有配置文件（它从中读取 wiki 列表）。当你显式指定 wiki 名字
 （`wikit backup <名字> ...`）且本地没有 `config.json` 时，wikit 会用上面这套相同的
-默认值内置运行——备份到 `/data`，其余参数同上。可以用 `--base-dir`（以及其他覆盖参数）
+默认值内置运行，备份到 `/data`，其余参数同上。可以用 `--base-dir`（以及其他覆盖参数）
 在不写配置文件的情况下调整，或用 `-c <路径>` 指向一个配置文件。用 `-c` 指定一个不存在
 的配置文件会报错。
 
