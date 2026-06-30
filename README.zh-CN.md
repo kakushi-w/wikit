@@ -3,8 +3,7 @@
 [![English](https://img.shields.io/badge/Lang-English-9ca3af?style=for-the-badge)](README.md)&nbsp;[![中文](https://img.shields.io/badge/语言-中文-2563eb?style=for-the-badge)](README.zh-CN.md)
 
 由Go语言驱动的跨平台（Windows / Linux / macOS）的 Wikidot 维基备份工具。它产出的备份**兼容
-WikiComma 归档格式**：相同的目录结构、逐字节相同的文件内容。因此已有的
-WikiComma 备份和它的 `config.json` 可以原样沿用，`wikit` 会在其基础上继续增量备份。备份可直接导入[ProjectWikit维基迁移引擎](https://github.com/WikitTeam/ProjectWikit)使用。
+WikiComma 归档格式**：相同的目录结构、逐字节相同的文件内容。备份可直接导入[ProjectWikit维基迁移引擎](https://github.com/WikitTeam/ProjectWikit)使用。
 
 
 ## 能备份哪些数据
