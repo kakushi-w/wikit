@@ -56,7 +56,11 @@ func Default() *Config {
 	delay := 200
 	cache := 86400
 	return &Config{
-		BaseDirectory:          "/data",
+		// Relative "wikit_data" so a config-less run archives into a
+		// ./wikit_data folder under the current working directory (where the
+		// command was launched), rather than the absolute /data the example
+		// config uses.
+		BaseDirectory:          "wikit_data",
 		Ratelimit:              &Ratelimit{BucketSize: 60, RefillSeconds: 60},
 		DelayMs:                &delay,
 		UserListCacheFreshness: &cache,

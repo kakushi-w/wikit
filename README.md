@@ -153,10 +153,11 @@ The same `config.json` format as WikiComma:
 
 A config file is only required for `backup all`, which reads the wiki list from
 it. When you name wikis explicitly (`wikit backup <name> ...`) and there is no
-`config.json`, wikit runs with these same defaults built in — backing up to
-`/data` with the values shown above. Use `--base-dir` (and the other override
-flags) to adjust them without writing a config, or pass `-c <path>` to point at
-one. Naming a config with `-c` that does not exist is an error.
+`config.json`, wikit runs with these same defaults built in — archiving into a
+`wikit_data` folder created in the current working directory (where you launched
+the command). Use `--base-dir` (and the other override flags) to adjust them
+without writing a config, or pass `-c <path>` to point at one. Naming a config
+with `-c` that does not exist is an error.
 
 ## Output layout
 
