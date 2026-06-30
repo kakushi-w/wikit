@@ -97,7 +97,7 @@ irm https://raw.githubusercontent.com/kakushi-w/wikit/main/install.ps1 | iex
 
 ```
 wikit backup all                 # 备份 config.json 里的所有 wiki
-wikit backup <名字> [名字...]     # 备份指定的 wiki
+wikit backup <名字> [名字...]     # 备份指定的 wiki，用空格分隔多个wiki
                                  # 不在 config 里的名字会按
                                  # https://<名字>.wikidot.com 抓取
 ```
