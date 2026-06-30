@@ -4,9 +4,7 @@
 
 A cross-platform (Windows / Linux / macOS) Wikidot farm-wiki archiving tool, powered by Go. It
 produces backups that are **compatible with the WikiComma archive format** — the
-same directory layout and byte-for-byte the same file contents — so an existing
-WikiComma backup and its `config.json` can be reused unchanged, and `wikit` will
-continue it incrementally.The backup can be directly imported for use with the [ProjectWikit Engine](https://github.com/WikitTeam/ProjectWikit).
+same directory layout and byte-for-byte the same file contents.The backup can be directly imported for use with the [ProjectWikit Engine](https://github.com/WikitTeam/ProjectWikit).
 
 
 ## What gets archived
