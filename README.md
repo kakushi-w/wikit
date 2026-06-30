@@ -101,7 +101,7 @@ Prefer to do it by hand? Download a binary from the
 
 ```
 wikit backup all                 # back up every wiki in config.json
-wikit backup <name> [name...]    # back up specific wikis
+wikit backup <name> [name...]    # back up specific wikis, Separate multiple wikis with spaces
                                  # a name not in the config is fetched from
                                  # https://<name>.wikidot.com
 ```
