@@ -75,7 +75,7 @@ func Run(cfg *config.Config, wikis []config.WikiEntry) error {
 				break
 			}
 			if err := w.WorkLoop(&sitemapLock); err != nil {
-				fmt.Printf("[%s] backup failed: %v\n", entry.Name, err)
+				wiki.LogError(entry.Name, fmt.Sprintf("backup failed: %v", err))
 			}
 		}(entry)
 	}
