@@ -148,8 +148,7 @@ one-line notice if a newer version is available — disable with
 
 ## Config
 
-The same `config.json` format as WikiComma, plus two optional wikit fields
-(`refresh_votes`, `scheme`):
+`config.json` format:
 
 ```json
 {
