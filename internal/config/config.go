@@ -46,6 +46,20 @@ type Config struct {
 	HTTPProxy              *HTTPProxy  `json:"http_proxy,omitempty"`
 	SocksProxy             *SocksProxy `json:"socks_proxy,omitempty"`
 	UltraFastIncremental   bool        `json:"ultra_fast_incremental_scan,omitempty"`
+
+	// RefreshVotes enables a bulk ListPages rating/vote refresh after the normal
+	// backup. Settable in config.json or via --refresh-votes.
+	RefreshVotes bool `json:"refresh_votes,omitempty"`
+
+	// Scheme is the URL scheme ("http" or "https") used for wiki requests. Empty
+	// means https. HTTP-only wikis need "http" because the HTTPS ajax endpoint
+	// won't answer for them. Settable in config.json or via --scheme.
+	Scheme string `json:"scheme,omitempty"`
+
+	// KeepRemoved keeps locally-archived pages that have disappeared from the
+	// sitemap instead of deleting them. Settable in config.json or via
+	// --keep-removed.
+	KeepRemoved bool `json:"keep_removed,omitempty"`
 }
 
 // Default returns the built-in configuration used when no config.json is

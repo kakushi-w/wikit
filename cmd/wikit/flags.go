@@ -24,6 +24,9 @@ type backupOpts struct {
 	userCache     *int
 	httpProxy     *string
 	socksProxy    *string
+	scheme        *string
+	refreshVotes  *bool
+	keepRemoved   *bool
 
 	noUpdateCheck bool
 }
@@ -51,6 +54,9 @@ func parseBackupArgs(args []string) (backupOpts, []string, error) {
 	httpProxy := fs.String("http-proxy", "", "http proxy host:port[:user:password]")
 	socksProxy := fs.String("socks-proxy", "", "socks proxy host:port")
 	noUpdateCheck := fs.Bool("no-update-check", false, "do not check for a newer wikit release")
+	refreshVotes := fs.Bool("refresh-votes", false, "after backup, bulk-refresh page ratings/votes via ListPages")
+	scheme := fs.String("scheme", "https", "wiki URL scheme: http or https")
+	keepRemoved := fs.Bool("keep-removed", false, "keep locally-archived pages that vanished from the sitemap")
 
 	// Allow flags and positional targets to be interleaved.
 	var targets []string
@@ -94,14 +100,37 @@ func parseBackupArgs(args []string) (backupOpts, []string, error) {
 	if setFlags["socks-proxy"] {
 		opts.socksProxy = socksProxy
 	}
+	if setFlags["refresh-votes"] {
+		opts.refreshVotes = refreshVotes
+	}
+	if setFlags["keep-removed"] {
+		opts.keepRemoved = keepRemoved
+	}
+	if setFlags["scheme"] {
+		if *scheme != "http" && *scheme != "https" {
+			return opts, nil, fmt.Errorf("--scheme must be \"http\" or \"https\", got %q", *scheme)
+		}
+		opts.scheme = scheme
+	}
 	opts.noUpdateCheck = *noUpdateCheck
 	opts.configSet = setFlags["config"] || setFlags["c"]
 
 	return opts, targets, nil
 }
 
-// apply mutates cfg in place with any overrides the user supplied.
+// apply mutates cfg in place with any overrides the user supplied. Only flags
+// the user explicitly set take effect, so values from config.json are preserved
+// when the corresponding flag is absent.
 func (o backupOpts) apply(cfg *config.Config) {
+	if o.refreshVotes != nil {
+		cfg.RefreshVotes = *o.refreshVotes
+	}
+	if o.keepRemoved != nil {
+		cfg.KeepRemoved = *o.keepRemoved
+	}
+	if o.scheme != nil {
+		cfg.Scheme = *o.scheme
+	}
 	if o.baseDir != nil {
 		cfg.BaseDirectory = *o.baseDir
 	}

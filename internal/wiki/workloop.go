@@ -42,17 +42,21 @@ func (w *WikiDot) WorkLoop(sitemapLock *sync.Mutex) error {
 		w.logf("No previous sitemap was found, doing full scan")
 	} else {
 		w.logf("Previous sitemap contains %d pages", len(oldMap))
-		index := make(map[string]bool, len(entries))
-		for _, e := range entries {
-			index[e.Name] = true
-		}
-		for name := range oldMap {
-			if !index[name] {
-				w.logf("Page %s was removed", name)
-				meta := w.readPageMetadata(name)
-				w.markPageRemoved(name)
-				if meta != nil {
-					w.state.deletePageID(meta.PageID)
+		if w.keepRemoved {
+			w.logf("Keeping pages missing from the sitemap (--keep-removed)")
+		} else {
+			index := make(map[string]bool, len(entries))
+			for _, e := range entries {
+				index[e.Name] = true
+			}
+			for name := range oldMap {
+				if !index[name] {
+					w.logf("Page %s was removed", name)
+					meta := w.readPageMetadata(name)
+					w.markPageRemoved(name)
+					if meta != nil {
+						w.state.deletePageID(meta.PageID)
+					}
 				}
 			}
 		}
@@ -74,6 +78,12 @@ func (w *WikiDot) WorkLoop(sitemapLock *sync.Mutex) error {
 
 	// Final compression sweep of any leftover loose directories.
 	w.compressLeftovers()
+
+	// Optional: bulk-refresh ratings/votes for pages the sitemap scan skipped
+	// (voting doesn't bump lastmod, so it is invisible to the incremental scan).
+	if w.refreshVotes {
+		w.refreshRatings(siteMeta.SiteID, entries)
+	}
 
 	return w.state.flush()
 }
@@ -227,7 +237,12 @@ func (w *WikiDot) buildAndRenew(name string, pageUpdate *int64, metadata *PageMe
 	}
 	w.state.setPageID(newMeta.PageID, name)
 
-	newMeta.Rating = pageMeta.Rating
+	if pageMeta.Rating != nil {
+		r := float64(*pageMeta.Rating)
+		newMeta.Rating = &r
+	} else {
+		newMeta.Rating = nil
+	}
 	newMeta.ForumThread = pageMeta.ForumThread
 	if len(pageMeta.Tags) > 0 {
 		tags := pageMeta.Tags

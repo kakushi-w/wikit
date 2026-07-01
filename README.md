@@ -119,6 +119,19 @@ wikit backup <name> [name...]    # back up specific wikis, Separate multiple wik
     --http-proxy <s>     http proxy: host:port or host:port:user:password
     --socks-proxy <s>    socks proxy: host:port
     --no-update-check    do not check for a newer wikit release
+    --refresh-votes      after backup, bulk-refresh page ratings/votes
+    --scheme <s>         wiki URL scheme: http or https (default https)
+    --keep-removed       keep pages that disappeared from the sitemap
+```
+
+### Refreshing ratings and votes
+
+The normal scan can't see rating/vote changes (they don't bump a page's
+timestamp), so stored ratings go stale. `--refresh-votes` updates them after the
+backup, rewriting only page metadata:
+
+```
+wikit backup scp-wiki --refresh-votes
 ```
 
 ## Updating
@@ -135,7 +148,8 @@ one-line notice if a newer version is available — disable with
 
 ## Config
 
-The same `config.json` format as WikiComma:
+The same `config.json` format as WikiComma, plus two optional wikit fields
+(`refresh_votes`, `scheme`):
 
 ```json
 {
@@ -145,9 +159,17 @@ The same `config.json` format as WikiComma:
   "delay_ms": 200,
   "user_list_cache_freshness": 86400,
   "http_proxy": null,
-  "socks_proxy": null
+  "socks_proxy": null,
+  "refresh_votes": false,
+  "scheme": "https",
+  "keep_removed": false
 }
 ```
+
+`refresh_votes`, `scheme` and `keep_removed` can be set here or overridden
+per-run with the matching flags (the flag wins). Set `scheme` to `http` for
+HTTP-only wikis (default `https`). `keep_removed` keeps pages deleted from the
+wiki instead of removing them from the local archive.
 
 A config file is only required for `backup all`, which reads the wiki list from
 it. When you name wikis explicitly (`wikit backup <name> ...`) and there is no

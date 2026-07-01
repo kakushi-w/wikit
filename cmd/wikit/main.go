@@ -19,11 +19,15 @@
 //	    --user-cache    user info cache freshness (seconds)
 //	    --http-proxy    http proxy as host:port or host:port:user:password
 //	    --socks-proxy   socks proxy as host:port
+//	    --refresh-votes after backup, bulk-refresh page ratings/votes via ListPages
+//	    --scheme        wiki URL scheme: http or https (default https)
+//	    --keep-removed  keep pages that disappeared from the sitemap
 package main
 
 import (
 	"fmt"
 	"os"
+	"strings"
 
 	"wikit/internal/backup"
 	"wikit/internal/config"
@@ -65,7 +69,7 @@ func main() {
 	case "-h", "--help", "help":
 		usage()
 	case "version", "--version":
-		fmt.Println("wikit (WikiComma-compatible) " + version)
+		fmt.Println("wikit " + version)
 	default:
 		fmt.Fprintf(os.Stderr, "wikit: unknown command %q\n", os.Args[1])
 		usage()
@@ -166,6 +170,11 @@ func wantsAll(targets []string) bool {
 // to back up. "all" expands to config.wikis; any other name is looked up in the
 // config and, if absent, synthesized from the default Wikidot URL.
 func resolveTargets(cfg *config.Config, targets []string) ([]config.WikiEntry, error) {
+	scheme := "https"
+	if cfg.Scheme == "http" {
+		scheme = "http"
+	}
+
 	for _, t := range targets {
 		if t == "all" {
 			if len(targets) != 1 {
@@ -174,26 +183,41 @@ func resolveTargets(cfg *config.Config, targets []string) ([]config.WikiEntry, e
 			if len(cfg.Wikis) == 0 {
 				return nil, fmt.Errorf("config lists no wikis")
 			}
-			return cfg.Wikis, nil
+			out := make([]config.WikiEntry, len(cfg.Wikis))
+			for i, w := range cfg.Wikis {
+				out[i] = config.WikiEntry{Name: w.Name, URL: withScheme(w.URL, scheme)}
+			}
+			return out, nil
 		}
 	}
 
 	var out []config.WikiEntry
 	for _, t := range targets {
 		if w, ok := cfg.FindWiki(t); ok {
-			out = append(out, w)
+			out = append(out, config.WikiEntry{Name: w.Name, URL: withScheme(w.URL, scheme)})
 		} else {
 			out = append(out, config.WikiEntry{
 				Name: t,
-				URL:  "https://" + t + ".wikidot.com",
+				URL:  scheme + "://" + t + ".wikidot.com",
 			})
 		}
 	}
 	return out, nil
 }
 
+// withScheme forces rawURL to use the given scheme, so a single --scheme/config
+// setting governs the protocol for every target wiki (synthesized or from
+// config). A URL without a scheme gets one prepended.
+func withScheme(rawURL, scheme string) string {
+	rest := rawURL
+	if i := strings.Index(rest, "://"); i != -1 {
+		rest = rest[i+3:]
+	}
+	return scheme + "://" + rest
+}
+
 func usage() {
-	fmt.Fprint(os.Stderr, `wikit - cross-platform Wikidot archiver (WikiComma-compatible)
+	fmt.Fprint(os.Stderr, `wikit - cross-platform Wikidot archiver
 
 Usage:
   wikit backup all                  back up every wiki in config.json
@@ -213,5 +237,8 @@ Flags:
       --user-cache <n>    user info cache freshness in seconds
       --http-proxy <s>    http proxy: host:port or host:port:user:password
       --socks-proxy <s>   socks proxy: host:port
+      --refresh-votes     after backup, bulk-refresh page ratings/votes via ListPages
+      --scheme <s>        wiki URL scheme: http or https (default https)
+      --keep-removed      keep pages that disappeared from the sitemap
 `)
 }

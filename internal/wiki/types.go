@@ -130,7 +130,7 @@ type PageMeta struct {
 	Files         []FileMeta
 	PageID        int64
 	Parent        *string
-	Rating        *int64
+	Rating        *float64
 	ForumThread   *int64
 	Tags          *[]string
 	Title         *string

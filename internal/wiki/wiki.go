@@ -37,8 +37,10 @@ type WikiDot struct {
 	users     *userlist.List
 	state     *state
 	ajaxURL   *url.URL
-	delayMs   int
-	ultraFast bool
+	delayMs      int
+	ultraFast    bool
+	refreshVotes bool
+	keepRemoved  bool
 
 	tokenFetched bool
 
@@ -49,18 +51,20 @@ type WikiDot struct {
 	tokenMu sync.Mutex
 }
 
-func New(name, wikiURL, workDir string, client *httpc.Client, users *userlist.List, delayMs int, ultraFast bool) *WikiDot {
+func New(name, wikiURL, workDir string, client *httpc.Client, users *userlist.List, delayMs int, ultraFast, refreshVotes, keepRemoved bool) *WikiDot {
 	au, _ := url.Parse(wikiURL + "/ajax-module-connector.php")
 	w := &WikiDot{
-		name:      name,
-		url:       wikiURL,
-		workDir:   workDir,
-		client:    client,
-		users:     users,
-		state:     newState(workDir + "/meta"),
-		ajaxURL:   au,
-		delayMs:   delayMs,
-		ultraFast: ultraFast,
+		name:         name,
+		url:          wikiURL,
+		workDir:      workDir,
+		client:       client,
+		users:        users,
+		state:        newState(workDir + "/meta"),
+		ajaxURL:      au,
+		delayMs:      delayMs,
+		ultraFast:    ultraFast,
+		refreshVotes: refreshVotes,
+		keepRemoved:  keepRemoved,
 	}
 	return w
 }

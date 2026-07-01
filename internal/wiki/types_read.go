@@ -59,6 +59,32 @@ func readOptInt(o *jsonx.Object, key string) *int64 {
 	return &i
 }
 
+func asFloat(v any) float64 {
+	switch n := v.(type) {
+	case jsonx.Number:
+		f, _ := strconv.ParseFloat(string(n), 64)
+		return f
+	case float64:
+		return n
+	case int64:
+		return float64(n)
+	case int:
+		return float64(n)
+	}
+	return 0
+}
+
+// readOptFloat reads a number that may be integer or decimal (e.g. a +/- score
+// like 5, or a five-star average like 4.5), preserving fractional values.
+func readOptFloat(o *jsonx.Object, key string) *float64 {
+	v, ok := o.Get(key)
+	if !ok || v == nil {
+		return nil
+	}
+	f := asFloat(v)
+	return &f
+}
+
 func readOptStr(o *jsonx.Object, key string) *string {
 	v, ok := o.Get(key)
 	if !ok || v == nil {
@@ -112,7 +138,7 @@ func readPageMeta(o *jsonx.Object) *PageMeta {
 		Version:       readOptInt(o, "version"),
 		PageID:        asInt64(mustGet(o, "page_id")),
 		Parent:        readOptStr(o, "parent"),
-		Rating:        readOptInt(o, "rating"),
+		Rating:        readOptFloat(o, "rating"),
 		ForumThread:   readOptInt(o, "forum_thread"),
 		Title:         readOptStr(o, "title"),
 		SitemapUpdate: readOptInt(o, "sitemap_update"),
