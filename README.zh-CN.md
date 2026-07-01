@@ -142,8 +142,7 @@ wikit version           # 显示当前版本
 
 ## 配置
 
-与 WikiComma 相同的 `config.json` 格式，外加两个 wikit 可选字段
-（`refresh_votes`、`scheme`）：
+`config.json` 格式：
 
 ```json
 {
