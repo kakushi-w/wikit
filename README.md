@@ -109,7 +109,7 @@ wikit backup <name> [name...]    # back up specific wikis, Separate multiple wik
 ### Flags (override config.json values)
 
 ```
--c, --config <path>      config file (default ./config.json or $WIKICOMMA_CONFIG)
+-c, --config <path>      config file (default ./config.json or $WIKIT_CONFIG)
     --base-dir <path>    override base_directory
     --bucket-size <n>    ratelimit bucket size
     --refill-seconds <n> ratelimit refill seconds

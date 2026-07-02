@@ -34,7 +34,7 @@ type backupOpts struct {
 func parseBackupArgs(args []string) (backupOpts, []string, error) {
 	var opts backupOpts
 
-	defaultConfig := os.Getenv("WIKICOMMA_CONFIG")
+	defaultConfig := os.Getenv("WIKIT_CONFIG")
 	if defaultConfig == "" {
 		defaultConfig = "config.json"
 	}

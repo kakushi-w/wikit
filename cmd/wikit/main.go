@@ -10,7 +10,7 @@
 //
 // Override flags (defaults come from config.json):
 //
-//	-c, --config        path to config.json (default ./config.json or $WIKICOMMA_CONFIG)
+//	-c, --config        path to config.json (default ./config.json or $WIKIT_CONFIG)
 //	    --base-dir      override base_directory
 //	    --bucket-size   ratelimit bucket size
 //	    --refill-seconds ratelimit refill seconds
@@ -229,7 +229,7 @@ Usage:
   wikit version                     print the version
 
 Flags:
-  -c, --config <path>     config file (default ./config.json or $WIKICOMMA_CONFIG)
+  -c, --config <path>     config file (default ./config.json or $WIKIT_CONFIG)
       --base-dir <path>   override base_directory
       --bucket-size <n>   ratelimit bucket size
       --refill-seconds <n> ratelimit refill seconds
