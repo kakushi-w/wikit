@@ -55,7 +55,7 @@ func parseBackupArgs(args []string) (backupOpts, []string, error) {
 	socksProxy := fs.String("socks-proxy", "", "socks proxy host:port")
 	noUpdateCheck := fs.Bool("no-update-check", false, "do not check for a newer wikit release")
 	refreshVotes := fs.Bool("refresh-votes", false, "after backup, bulk-refresh page ratings/votes via ListPages")
-	scheme := fs.String("scheme", "https", "wiki URL scheme: http or https")
+	scheme := fs.String("scheme", "https", "default scheme for wikis whose url omits one: http or https")
 	keepRemoved := fs.Bool("keep-removed", false, "keep locally-archived pages that vanished from the sitemap")
 
 	// Allow flags and positional targets to be interleaved.

@@ -12,7 +12,10 @@ import (
 
 type WikiEntry struct {
 	Name string `json:"name"`
-	URL  string `json:"url"`
+	// URL is optional. Omit it for a standard wiki to derive
+	// <scheme>://<name>.wikidot.com; set it for a custom domain or to pin this
+	// wiki's protocol (an explicit http://…/https://… is honored as written).
+	URL string `json:"url,omitempty"`
 }
 
 type Ratelimit struct {
@@ -51,9 +54,10 @@ type Config struct {
 	// backup. Settable in config.json or via --refresh-votes.
 	RefreshVotes bool `json:"refresh_votes,omitempty"`
 
-	// Scheme is the URL scheme ("http" or "https") used for wiki requests. Empty
-	// means https. HTTP-only wikis need "http" because the HTTPS ajax endpoint
-	// won't answer for them. Settable in config.json or via --scheme.
+	// Scheme is the default URL scheme ("http" or "https") applied only to wikis
+	// whose own url omits a scheme (and to bare command-line names). A wiki whose
+	// url already includes http:// or https:// keeps that, so per-wiki protocols
+	// are possible. Empty means https. Settable in config.json or via --scheme.
 	Scheme string `json:"scheme,omitempty"`
 
 	// KeepRemoved keeps locally-archived pages that have disappeared from the

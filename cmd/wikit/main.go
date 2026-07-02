@@ -20,7 +20,7 @@
 //	    --http-proxy    http proxy as host:port or host:port:user:password
 //	    --socks-proxy   socks proxy as host:port
 //	    --refresh-votes after backup, bulk-refresh page ratings/votes via ListPages
-//	    --scheme        wiki URL scheme: http or https (default https)
+//	    --scheme        default scheme for wikis whose url omits one (http/https)
 //	    --keep-removed  keep pages that disappeared from the sitemap
 package main
 
@@ -168,7 +168,7 @@ func wantsAll(targets []string) bool {
 
 // resolveTargets turns the positional arguments into the concrete list of wikis
 // to back up. "all" expands to config.wikis; any other name is looked up in the
-// config and, if absent, synthesized from the default Wikidot URL.
+// config and, if absent, synthesized from its name.
 func resolveTargets(cfg *config.Config, targets []string) ([]config.WikiEntry, error) {
 	scheme := "https"
 	if cfg.Scheme == "http" {
@@ -185,7 +185,7 @@ func resolveTargets(cfg *config.Config, targets []string) ([]config.WikiEntry, e
 			}
 			out := make([]config.WikiEntry, len(cfg.Wikis))
 			for i, w := range cfg.Wikis {
-				out[i] = config.WikiEntry{Name: w.Name, URL: withScheme(w.URL, scheme)}
+				out[i] = config.WikiEntry{Name: w.Name, URL: resolveWikiURL(w.Name, w.URL, scheme)}
 			}
 			return out, nil
 		}
@@ -194,26 +194,27 @@ func resolveTargets(cfg *config.Config, targets []string) ([]config.WikiEntry, e
 	var out []config.WikiEntry
 	for _, t := range targets {
 		if w, ok := cfg.FindWiki(t); ok {
-			out = append(out, config.WikiEntry{Name: w.Name, URL: withScheme(w.URL, scheme)})
+			out = append(out, config.WikiEntry{Name: w.Name, URL: resolveWikiURL(w.Name, w.URL, scheme)})
 		} else {
-			out = append(out, config.WikiEntry{
-				Name: t,
-				URL:  scheme + "://" + t + ".wikidot.com",
-			})
+			out = append(out, config.WikiEntry{Name: t, URL: resolveWikiURL(t, "", scheme)})
 		}
 	}
 	return out, nil
 }
 
-// withScheme forces rawURL to use the given scheme, so a single --scheme/config
-// setting governs the protocol for every target wiki (synthesized or from
-// config). A URL without a scheme gets one prepended.
-func withScheme(rawURL, scheme string) string {
-	rest := rawURL
-	if i := strings.Index(rest, "://"); i != -1 {
-		rest = rest[i+3:]
+// resolveWikiURL builds the request URL for a wiki. A url that already carries a
+// scheme is honored verbatim, so each configured wiki can pick http or https
+// independently. A url without a scheme gets the default scheme; an empty url is
+// derived from the name as <scheme>://<name>.wikidot.com. The default scheme
+// comes from --scheme / config.scheme and only fills in when the url is silent.
+func resolveWikiURL(name, rawURL, defaultScheme string) string {
+	if rawURL == "" {
+		return defaultScheme + "://" + name + ".wikidot.com"
 	}
-	return scheme + "://" + rest
+	if strings.Contains(rawURL, "://") {
+		return rawURL
+	}
+	return defaultScheme + "://" + strings.TrimPrefix(rawURL, "//")
 }
 
 func usage() {
@@ -238,7 +239,7 @@ Flags:
       --http-proxy <s>    http proxy: host:port or host:port:user:password
       --socks-proxy <s>   socks proxy: host:port
       --refresh-votes     after backup, bulk-refresh page ratings/votes via ListPages
-      --scheme <s>        wiki URL scheme: http or https (default https)
+      --scheme <s>        default scheme for wikis whose url omits one: http or https (default https)
       --keep-removed      keep pages that disappeared from the sitemap
 `)
 }

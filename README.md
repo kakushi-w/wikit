@@ -120,7 +120,7 @@ wikit backup <name> [name...]    # back up specific wikis, Separate multiple wik
     --socks-proxy <s>    socks proxy: host:port
     --no-update-check    do not check for a newer wikit release
     --refresh-votes      after backup, bulk-refresh page ratings/votes
-    --scheme <s>         wiki URL scheme: http or https (default https)
+    --scheme <s>         default scheme for wikis whose url omits one (default https)
     --keep-removed       keep pages that disappeared from the sitemap
 ```
 
@@ -166,9 +166,21 @@ one-line notice if a newer version is available — disable with
 ```
 
 `refresh_votes`, `scheme` and `keep_removed` can be set here or overridden
-per-run with the matching flags (the flag wins). Set `scheme` to `http` for
-HTTP-only wikis (default `https`). `keep_removed` keeps pages deleted from the
-wiki instead of removing them from the local archive.
+per-run with the matching flags (the flag wins). `keep_removed` keeps pages
+deleted from the wiki instead of removing them from the local archive.
+
+Each wiki's `url` is optional (omit it to derive `https://<name>.wikidot.com`)
+and sets that wiki's protocol: a `url` written with `http://` or `https://` is
+used as-is, so wikis can mix protocols. `scheme` is only the default for wikis
+whose `url` omits one (and for bare command-line names); set it to `http` when
+your default wiki is HTTP-only.
+
+```json
+"wikis": [
+  { "name": "a" },                              // https://a.wikidot.com
+  { "name": "b", "url": "http://b.example.com" } // http, custom domain
+]
+```
 
 A config file is only required for `backup all`, which reads the wiki list from
 it. When you name wikis explicitly (`wikit backup <name> ...`) and there is no
